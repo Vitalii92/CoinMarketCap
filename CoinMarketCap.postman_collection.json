@@ -1,0 +1,169 @@
+{
+	"info": {
+		"_postman_id": "a0b01dcd-4643-4447-8eee-83fb1dfc153e",
+		"name": "CoinMarketCap",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check actual api key",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-CMC_PRO_API_KEY",
+						"value": "{{api key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{domain}}/v1/cryptocurrency/map?symbol=ETH",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"v1",
+						"cryptocurrency",
+						"map"
+					],
+					"query": [
+						{
+							"key": "symbol",
+							"value": "ETH"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check data of cryptocurrency Ethereum",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dac297a2-71b3-4b6f-9b69-cddddea49c4f",
+						"exec": [
+							"//1. Check status code",
+							"pm.test(\"Check status code\", function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"//2. Check that string is contain in response",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"https://www.ethereum.org/\");",
+							"});",
+							"",
+							"",
+							"//3. Check that json is contained object ETH",
+							"pm.test(\"Check that json is contained object ETH\", function(){",
+							"    var jsonBody = pm.response.json();",
+							"    var obj = Object.keys(jsonBody.data);",
+							"    pm.expect(obj).to.eql([\"ETH\"]);",
+							"    console.log(\"Json has contained: \" + obj);",
+							"});",
+							"",
+							"",
+							"",
+							"//4. Check that website equal https://www.ethereum.org/",
+							"pm.test(\"Check that website equal https://www.ethereum.org/\", function(){",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    pm.expect(jsonData.data.ETH.urls.website[0]).to.eql(\"https://www.ethereum.org/\");",
+							"    console.log(\"Key 'website' equal: \" + jsonData.data.ETH.urls.website[0]);",
+							"});",
+							"",
+							"",
+							"//5. Set variable from response",
+							"pm.test(\"Set variable from response\", function(){",
+							"    var logoETH = JSON.parse(responseBody);",
+							"    pm.environment.set(\"logo ETH\", logoETH.data.ETH.logo);",
+							"    console.log(\"Variable logo ETH has a value: \" + logoETH.data.ETH.logo);",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-CMC_PRO_API_KEY",
+						"value": "{{api key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{domain}}/v1/cryptocurrency/info?symbol=ETH",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"v1",
+						"cryptocurrency",
+						"info"
+					],
+					"query": [
+						{
+							"key": "symbol",
+							"value": "ETH"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Import variable from another request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "34e1c303-e4f8-4f99-960e-676b9b2fc175",
+						"exec": [
+							"//5.1. Check status code on link the logo ETH ",
+							"pm.test(\"Check status code on link the logo ETH\", function(){",
+							"    try{",
+							"        pm.response.to.have.status(200);",
+							"        console.log(\"Status code is: \" + pm.response.code);",
+							"    } catch (e) {",
+							"        console.log(\"Status code is: \" + pm.response.code);",
+							"    }",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{logo ETH}}",
+					"host": [
+						"{{logo ETH}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
